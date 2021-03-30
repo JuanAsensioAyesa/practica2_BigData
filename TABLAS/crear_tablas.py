@@ -105,7 +105,7 @@ def update_cast(id_pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, dic_m
         tabla_cast_out[id_pelicula]['tuplas'] = {}
         for persona in dic_cast_in[id_pelicula]:
             roles = dic_cast_in[id_pelicula][persona]['roles']
-            personaje = dic_cast_in[id_pelicula][persona]['personajes'][0]
+            personaje = dic_cast_in[id_pelicula][persona]['characters'][0]
 
             if 'actor' in roles or 'actress' in roles:
                 update_miembro_cast(
@@ -163,20 +163,28 @@ if __name__ == "__main__":
                 votos_out[id_votos] = {}
                 votos_out[id_votos]['clvCrew'] = update_crew(
                     pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, tabla_miembro_crew_out)
+                print("Crew actualizada")
                 votos_out[id_votos]['clvCast'] = update_cast(
                     pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, tabla_miembro_cast_out)
+                print("Cast actualizado")
                 votos_out[id_votos]['clvPelicula'] = update_peliculas(
                     pelicula, tabla_pelicula_out, dic_peliculas_in)
+                print("Peliculas actualizadas")
                 votos_out[id_votos]['clvGenero'] = update_genero(
                     pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
+                print("Generos actualizados")
                 id_votos += 1
+            print("Liberando pelicula de RAM")
             del votos_in[pelicula]
+        print("Guardando votos ", i)
         f = open("./tablas/tabla_votos"+str(i)+".pck", 'wb')
+        print("Guardado")
         pickle.dump(votos_out, f)
         f.close()
         del votos_out
         votos_out = {}
 
+    print("Tabla pelicula guardada")
     f = open("./tablas/tabla_pelicula.pck", 'wb')
     pickle.dump(tabla_pelicula_out, f)
     f.close()
@@ -185,19 +193,24 @@ if __name__ == "__main__":
     pickle.dump(tabla_genero_out, f)
     f.close()
     del tabla_genero_out
+    print("Tabla genero guardada")
     f = open("./tablas/tabla_cast.pck", 'wb')
     pickle.dump(tabla_cast_out, f)
     f.close()
     del tabla_cast_out
+    print("Tabla cast guardada")
     f = open("./tablas/tabla_crew.pck", 'wb')
     pickle.dump(tabla_crew_out, f)
     f.close()
     del tabla_crew_out
+    print("Tabla crew guardada")
     f = open("./tablas/tabla_miembro_crew.pck", 'wb')
     pickle.dump(tabla_miembro_crew_out, f)
     f.close()
     del tabla_miembro_crew_out
+    print("Tabla miembro crew guardada")
     f = open("./tablas/tabla_miembro_cast.pck", 'wb')
     pickle.dump(tabla_miembro_cast_out, f)
     f.close()
     del tabla_miembro_cast_out
+    print("Tabla miembro cast guardada")
