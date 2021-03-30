@@ -130,7 +130,7 @@ def update_miembro_cast(id_persona, dic_personas_in, dic_miembro_cast_out, nombr
 
 
 if __name__ == "__main__":
-    votos_in = "dic_votos"
+    votos_in_file = "dic_votos"
     dic_generos_in = load_dict("../generos/diccionarios/dic_generos.pck")
     dic_pelis_generos_in = load_dict(
         "../generos/diccionarios/dic_pelis_generos.pck")
@@ -152,7 +152,52 @@ if __name__ == "__main__":
     tabla_miembro_crew_out = {}
     tabla_voto_out = {}
 
+    id_votos = 0
+    votos_out = {}
     for i in np.arange(7):
         i = str(i+1)
-        votos_in = load_dict("../votos/diccionarios/"+votos_in+i+'.pck')
-        break
+        print(i)
+        votos_in = load_dict("../votos/diccionarios/"+votos_in_file+i+'.pck')
+        for pelicula in votos_in:
+            for voto in votos_in[pelicula]['votos']:
+                votos_out[id_votos] = {}
+                votos_out[id_votos]['clvCrew'] = update_crew(
+                    pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, tabla_miembro_crew_out)
+                votos_out[id_votos]['clvCast'] = update_cast(
+                    pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, tabla_miembro_cast_out)
+                votos_out[id_votos]['clvPelicula'] = update_peliculas(
+                    pelicula, tabla_pelicula_out, dic_peliculas_in)
+                votos_out[id_votos]['clvGenero'] = update_genero(
+                    pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
+                id_votos += 1
+            del votos_in[pelicula]
+        f = open("./tablas/tabla_votos"+str(i)+".pck", 'wb')
+        pickle.dump(votos_out, f)
+        f.close()
+        del votos_out
+        votos_out = {}
+
+    f = open("./tablas/tabla_pelicula.pck", 'wb')
+    pickle.dump(tabla_pelicula_out, f)
+    f.close()
+    del tabla_pelicula_out
+    f = open("./tablas/tabla_genero.pck", 'wb')
+    pickle.dump(tabla_genero_out, f)
+    f.close()
+    del tabla_genero_out
+    f = open("./tablas/tabla_cast.pck", 'wb')
+    pickle.dump(tabla_cast_out, f)
+    f.close()
+    del tabla_cast_out
+    f = open("./tablas/tabla_crew.pck", 'wb')
+    pickle.dump(tabla_crew_out, f)
+    f.close()
+    del tabla_crew_out
+    f = open("./tablas/tabla_miembro_crew.pck", 'wb')
+    pickle.dump(tabla_miembro_crew_out, f)
+    f.close()
+    del tabla_miembro_crew_out
+    f = open("./tablas/tabla_miembro_cast.pck", 'wb')
+    pickle.dump(tabla_miembro_cast_out, f)
+    f.close()
+    del tabla_miembro_cast_out
