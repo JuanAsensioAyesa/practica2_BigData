@@ -20,6 +20,7 @@ def load_links():
     df = pd.read_csv("../data/ml-latest/links.csv",
                      usecols=['movieId', 'imdbId'])
     dic = {}
+    dic_ML_key = {}
     df = df.to_numpy()
 
     for row in df:
@@ -27,12 +28,16 @@ def load_links():
         while len(aux) < 7:
             aux = "0"+aux
         dic["tt"+aux] = row[0]
-    return dic
+        dic_ML_key[row[0]] = "tt"+aux
+    return dic, dic_ML_key
 
 
 if __name__ == "__main__":
-    dic_links = load_links()
+    dic_links, dic_links_ML = load_links()
    # print(dic_links)
     f = open("./diccionarios/links.pck", 'wb')
     pickle.dump(dic_links, f)
+    f.close()
+    f = open("./diccionarios/links_ML_key.pck", 'wb')
+    pickle.dump(dic_links_ML, f)
     f.close()
