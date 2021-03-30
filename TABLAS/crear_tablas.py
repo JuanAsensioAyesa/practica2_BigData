@@ -95,6 +95,40 @@ def update_miembro_crew(id_persona, dic_personas_in, dic_miembro_crew_out, esGui
     return dic_miembro_crew_out[id_persona]['id']
 
 
+def update_cast(id_pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, dic_miembro_cast_out):
+
+    if not id_pelicula in tabla_cast_out:
+        tabla_cast_out[id_pelicula] = {}
+        id_cast = len(tabla_cast_out)-1
+        # Almacenamos una entrada por tupla
+        tabla_cast_out[id_pelicula]['id'] = id_cast
+        tabla_cast_out[id_pelicula]['tuplas'] = {}
+        for persona in dic_cast_in[id_pelicula]:
+            roles = dic_cast_in[id_pelicula][persona]['roles']
+            personaje = dic_cast_in[id_pelicula][persona]['personajes'][0]
+
+            if 'actor' in roles or 'actress' in roles:
+                update_miembro_cast(
+                    persona, dic_personas_in, dic_miembro_cast_out, personaje)
+
+    return tabla_crew_out[id_pelicula]['id']
+# Modifica el diccionario de la tabla de miembro crew y devuelve el id
+
+
+def update_miembro_cast(id_persona, dic_personas_in, dic_miembro_cast_out, nombrePersonaje):
+
+    if not id_persona in dic_miembro_cast_out:
+        dic_miembro_cast_out[id_persona] = {}
+        dic_miembro_cast_out[id_persona]['id'] = len(dic_miembro_cast_out)-1
+        dic_miembro_cast_out[id_persona]['nombre'] = dic_personas_in[id_persona]['nombre']
+        dic_miembro_cast_out[id_persona]['nacimiento'] = dic_personas_in[id_persona]['nacimiento']
+        dic_miembro_cast_out[id_persona]['fallecimiento'] = dic_personas_in[id_persona]['fallecimiento']
+
+        dic_miembro_cast_out[id_persona]['personaje'] = nombrePersonaje
+
+    return dic_miembro_cast_out[id_persona]['id']
+
+
 if __name__ == "__main__":
     votos_in = "dic_votos"
     dic_generos_in = load_dict("../generos/diccionarios/dic_generos.pck")
@@ -108,7 +142,7 @@ if __name__ == "__main__":
     dic_titles_in = load_dict("../titulos/diccionarios/title_akas.pck")
 
     dic_crew_in = load_dict("../crew/diccionarios/tabla_crew.pck")
-    dic_cast_in = load_dict("../crew/diccionarios/tabla_cast.pck")
+    dic_cast_in = load_dict("../cast/diccionarios/tabla_cast.pck")
 
     tabla_genero_out = {}
     tabla_pelicula_out = {}
