@@ -4,11 +4,11 @@ import pickle
 if __name__ == "__main__":
     data = {}
     i = 0
-    f = open("../tabla_cast/diccionarios/tabla_cast.pck", 'rb')
+    f = open("../cast/diccionarios/tabla_cast.pck", 'rb')
     dic_cast = pickle.load(f)
     f.close()
 
-    f = open("../tabla_crew/diccionarios/tabla_crew.pck", 'rb')
+    f = open("../crew/diccionarios/tabla_crew.pck", 'rb')
     dic_crew = pickle.load(f)
     f.close()
     lista_actores = set([])

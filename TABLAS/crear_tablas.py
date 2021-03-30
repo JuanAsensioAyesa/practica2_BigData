@@ -44,9 +44,9 @@ def update_peliculas(id_pelicula, tabla_pelicula_out, dic_peliculas_in):
         tabla_pelicula_out[id_pelicula] = {}
         tabla_pelicula_out[id_pelicula]['id'] = len(tabla_pelicula_out)-1
         info_peli = dic_peliculas_in[id_pelicula]
-        tabla_pelicula_out[id_pelicula]['titulo'] = info_peli['title']
+        tabla_pelicula_out[id_pelicula]['titulo'] = info_peli['titulo']
         tabla_pelicula_out[id_pelicula]['esAdulta'] = info_peli['isAdult']
-        tabla_pelicula_out[id_pelicula]['duracion'] = info_peli['minutes']
+        tabla_pelicula_out[id_pelicula]['duracion'] = info_peli['minutos']
         tabla_pelicula_out[id_pelicula]['AnyoEstreno'] = info_peli['year']
     return tabla_pelicula_out[id_pelicula]['id']
 # Modifica el diccionario de la tabla de crew y devuelve el id
@@ -63,12 +63,21 @@ def update_crew(id_pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, dic_m
         directores = dic_crew_in[id_pelicula]['directors']
         tabla_crew_out[id_pelicula]['tuplas'] = {}
         for guionista in guionistas:
-            id_persona = update_miembro_crew(
-                guionista, dic_personas_in, dic_miembro_crew_out, True, False)
+            # print("guionista")
+            id_persona = '\\N'
+            if guionista in dic_personas_in:
+                id_persona = update_miembro_crew(
+                    guionista, dic_personas_in, dic_miembro_crew_out, True, False)
+            #print("guionista 2")
             tabla_crew_out[id_pelicula]['tuplas'][(id_crew, id_persona)] = 0
         for director in directores:
-            id_persona = update_miembro_crew(
-                director, dic_personas_in, dic_miembro_crew_out, False, True)
+            # print("director")
+            id_persona = '\\N'
+            if director in dic_personas_in:
+                id_persona = update_miembro_crew(
+                    director, dic_personas_in, dic_miembro_crew_out, False, True)
+                #print("director 2")
+
             tabla_crew_out[id_pelicula]['tuplas'][(id_crew, id_persona)] = 0
 
     return tabla_crew_out[id_pelicula]['id']
@@ -104,10 +113,13 @@ def update_cast(id_pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, dic_m
         tabla_cast_out[id_pelicula]['id'] = id_cast
         tabla_cast_out[id_pelicula]['tuplas'] = {}
         for persona in dic_cast_in[id_pelicula]:
-            roles = dic_cast_in[id_pelicula][persona]['roles']
-            personaje = dic_cast_in[id_pelicula][persona]['characters'][0]
 
-            if 'actor' in roles or 'actress' in roles:
+            roles = dic_cast_in[id_pelicula][persona]['roles']
+            personaje = '\\N'
+            if 'characters' in dic_cast_in[id_pelicula][persona]:
+                personaje = dic_cast_in[id_pelicula][persona]['characters'][0]
+
+            if ('actor' in roles or 'actress' in roles) and persona in dic_personas_in:
                 update_miembro_cast(
                     persona, dic_personas_in, dic_miembro_cast_out, personaje)
 
@@ -158,24 +170,35 @@ if __name__ == "__main__":
         i = str(i+1)
         print(i)
         votos_in = load_dict("../votos/diccionarios/"+votos_in_file+i+'.pck')
+        #peliculas = votos_in.keys()
+        no_esta = 0
+        total = 0
         for pelicula in votos_in:
-            for voto in votos_in[pelicula]['votos']:
-                votos_out[id_votos] = {}
-                votos_out[id_votos]['clvCrew'] = update_crew(
-                    pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, tabla_miembro_crew_out)
-                print("Crew actualizada")
-                votos_out[id_votos]['clvCast'] = update_cast(
-                    pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, tabla_miembro_cast_out)
-                print("Cast actualizado")
-                votos_out[id_votos]['clvPelicula'] = update_peliculas(
-                    pelicula, tabla_pelicula_out, dic_peliculas_in)
-                print("Peliculas actualizadas")
-                votos_out[id_votos]['clvGenero'] = update_genero(
-                    pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
-                print("Generos actualizados")
-                id_votos += 1
-            print("Liberando pelicula de RAM")
-            del votos_in[pelicula]
+            total += 1
+            if pelicula in dic_pelis_generos_in and pelicula in dic_peliculas_in and pelicula in dic_crew_in and pelicula in dic_cast_in:
+                for voto in votos_in[pelicula]['votos']:
+                    votos_out[id_votos] = {}
+                    votos_out[id_votos]['clvCrew'] = update_crew(
+                        pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, tabla_miembro_crew_out)
+                    #print("Crew actualizada")
+                    votos_out[id_votos]['clvCast'] = update_cast(
+                        pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, tabla_miembro_cast_out)
+                    #print("Cast actualizado")
+                    votos_out[id_votos]['clvPelicula'] = update_peliculas(
+                        pelicula, tabla_pelicula_out, dic_peliculas_in)
+                    #print("Peliculas actualizadas")
+                    votos_out[id_votos]['clvGenero'] = update_genero(
+                        pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
+                    votos_out['user'] = voto['user']
+                    votos_out['rate'] = voto['rate']
+                    votos_out['time'] = voto['time']
+                    #print("Generos actualizados")
+                    id_votos += 1
+                    #print("Liberando pelicula de RAM")
+                    # del votos_in[pelicula
+            else:
+                no_esta += 1
+        print("Faltan ", no_esta, " de ", total)
         print("Guardando votos ", i)
         f = open("./tablas/tabla_votos"+str(i)+".pck", 'wb')
         print("Guardado")
