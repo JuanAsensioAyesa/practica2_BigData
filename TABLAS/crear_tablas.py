@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import datetime
 
 
 def procesar_fichero(dic_votos):
@@ -68,7 +69,7 @@ def update_crew(id_pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, dic_m
             if guionista in dic_personas_in:
                 id_persona = update_miembro_crew(
                     guionista, dic_personas_in, dic_miembro_crew_out, True, False)
-            #print("guionista 2")
+            # print("guionista 2")
             tabla_crew_out[id_pelicula]['tuplas'][(id_crew, id_persona)] = 0
         for director in directores:
             # print("director")
@@ -76,7 +77,7 @@ def update_crew(id_pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, dic_m
             if director in dic_personas_in:
                 id_persona = update_miembro_crew(
                     director, dic_personas_in, dic_miembro_crew_out, False, True)
-                #print("director 2")
+                # print("director 2")
 
             tabla_crew_out[id_pelicula]['tuplas'][(id_crew, id_persona)] = 0
 
@@ -141,6 +142,23 @@ def update_miembro_cast(id_persona, dic_personas_in, dic_miembro_cast_out, nombr
     return dic_miembro_cast_out[id_persona]['id']
 
 
+def update_fecha(timestamp, dic_fechas_out):
+    date = datetime.datetime.fromtimestamp(timestamp)
+
+    year = date.year
+    month = date.month
+    day = date.day
+    id_fecha = year*10000 + month * 100 + day
+    if not id_fecha in dic_fechas_out:
+        dic_fechas_out[id_fecha] = {}
+        dic_fechas_out[id_fecha]['Dia'] = day
+        dic_fechas_out[id_fecha]['Mes'] = month
+        dic_fechas_out[id_fecha]['Anyo'] = year
+        dic_fechas_out[id_fecha]['dd/mm/aaaa'] = str(
+            day) + "/"+str(month)+"/"+str(year)
+    return id_fecha
+
+
 if __name__ == "__main__":
     votos_in_file = "dic_votos"
     dic_generos_in = load_dict("../generos/diccionarios/dic_generos.pck")
@@ -163,6 +181,7 @@ if __name__ == "__main__":
     tabla_crew_out = {}
     tabla_miembro_crew_out = {}
     tabla_voto_out = {}
+    tabla_fecha_out = {}
 
     id_votos = 0
     votos_out = {}
@@ -170,7 +189,7 @@ if __name__ == "__main__":
         i = str(i+1)
         print(i)
         votos_in = load_dict("../votos/diccionarios/"+votos_in_file+i+'.pck')
-        #peliculas = votos_in.keys()
+        # peliculas = votos_in.keys()
         no_esta = 0
         total = 0
         for pelicula in votos_in:
@@ -180,21 +199,22 @@ if __name__ == "__main__":
                     votos_out[id_votos] = {}
                     votos_out[id_votos]['clvCrew'] = update_crew(
                         pelicula, tabla_crew_out, dic_crew_in, dic_personas_in, tabla_miembro_crew_out)
-                    #print("Crew actualizada")
+
                     votos_out[id_votos]['clvCast'] = update_cast(
                         pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, tabla_miembro_cast_out)
-                    #print("Cast actualizado")
+
                     votos_out[id_votos]['clvPelicula'] = update_peliculas(
                         pelicula, tabla_pelicula_out, dic_peliculas_in)
-                    #print("Peliculas actualizadas")
+
                     votos_out[id_votos]['clvGenero'] = update_genero(
                         pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
                     votos_out[id_votos]['user'] = voto['user']
                     votos_out[id_votos]['rate'] = voto['rate']
-                    votos_out[id_votos]['time'] = voto['time']
-                    #print("Generos actualizados")
+                    votos_out[id_votos]['time'] = update_fecha(
+                        voto['time'], tabla_fecha_out)
+                    # print("Generos actualizados")
                     id_votos += 1
-                    #print("Liberando pelicula de RAM")
+                    # print("Liberando pelicula de RAM")
                     # del votos_in[pelicula
             else:
                 no_esta += 1
@@ -237,3 +257,8 @@ if __name__ == "__main__":
     f.close()
     del tabla_miembro_cast_out
     print("Tabla miembro cast guardada")
+    f = open("./tablas/tabla_fecha.pck", 'wb')
+    pickle.dump(tabla_fecha_out, f)
+    f.close()
+    del tabla_fecha_out
+    print("Tabla fechas guardada")
