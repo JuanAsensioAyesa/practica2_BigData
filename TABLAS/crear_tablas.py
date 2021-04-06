@@ -189,9 +189,9 @@ if __name__ == "__main__":
                     #print("Peliculas actualizadas")
                     votos_out[id_votos]['clvGenero'] = update_genero(
                         pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
-                    votos_out['user'] = voto['user']
-                    votos_out['rate'] = voto['rate']
-                    votos_out['time'] = voto['time']
+                    votos_out[id_votos]['user'] = voto['user']
+                    votos_out[id_votos]['rate'] = voto['rate']
+                    votos_out[id_votos]['time'] = voto['time']
                     #print("Generos actualizados")
                     id_votos += 1
                     #print("Liberando pelicula de RAM")

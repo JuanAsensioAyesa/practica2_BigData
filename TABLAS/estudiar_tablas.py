@@ -11,6 +11,8 @@ if __name__ == "__main__":
         f.close()
 
         num_votos += len(dic)
+        for elem in dic:
+            print(dic[elem])
         del dic
 
     print("NUMERO DE VOTOS REGISTRADOS ", num_votos)
