@@ -31,7 +31,7 @@ CREATE TABLE MiembroCast
 CREATE TABLE Pelicula
 (
 	ClvPelicula			NUMBER,
-	Titulo			CHAR(64)		NOT NULL,
+	Titulo			CHAR(170)		NOT NULL,
 	EsAdulta			NUMBER(1),
 	Duracion			NUMBER,
 	AnyoEstreno			NUMBER,

@@ -1,0 +1,14 @@
+ssh -Y root@localhost -p 2223
+RootRoot$
+sqlplus sys/ORA-PASS1 as sysdba
+startup (ORACLE NOT AVALIABLE)
+
+scp -P 2223 archivo root@localhost:/
+
+@Borrar_tablas.sql 
+@Crear_tablas.sql
+
+/etc/init.d/oracle-xe enable
+/etc/init.d/oracle-xe start
+
+SET LINESIZE 16000 (Ver mejor los resultados en SQLPLUS)
