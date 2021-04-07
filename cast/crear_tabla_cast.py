@@ -37,13 +37,17 @@ if __name__ == "__main__":
 
                 data[id][id_persona]['roles'].append(role)
                 if characters != '\\N':
+                    characters = characters.replace('[', '')
+                    characters = characters.replace(']', '')
+                    characters = characters.replace('"', '')
                     if not 'characters' in data[id][id_persona]:
                         data[id][id_persona]['characters'] = []
+
                         for aux in characters.split(','):
                             data[id][id_persona]['characters'].append(aux)
 
                     else:
-                        for character in characters:
+                        for character in characters.split(','):
                             data[id][id_persona]['characters'].append(
                                 character)
         i += 1

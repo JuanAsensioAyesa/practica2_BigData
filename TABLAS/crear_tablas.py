@@ -121,8 +121,10 @@ def update_cast(id_pelicula, tabla_cast_out, dic_cast_in, dic_personas_in, dic_m
                 personaje = dic_cast_in[id_pelicula][persona]['characters'][0]
 
             if ('actor' in roles or 'actress' in roles) and persona in dic_personas_in:
-                update_miembro_cast(
+                id_persona = update_miembro_cast(
                     persona, dic_personas_in, dic_miembro_cast_out, personaje)
+                tabla_cast_out[id_pelicula]['tuplas'][(
+                    id_cast, id_persona)] = 0
 
     return tabla_crew_out[id_pelicula]['id']
 # Modifica el diccionario de la tabla de miembro crew y devuelve el id
@@ -208,10 +210,10 @@ if __name__ == "__main__":
 
                     votos_out[id_votos]['clvGenero'] = update_genero(
                         pelicula, tabla_genero_out, dic_generos_in, dic_pelis_generos_in)
-                    votos_out[id_votos]['user'] = voto['user']
-                    votos_out[id_votos]['rate'] = voto['rate']
-                    votos_out[id_votos]['time'] = update_fecha(
-                        voto['time'], tabla_fecha_out)
+                    # votos_out[id_votos]['user'] = voto['user']
+                    # votos_out[id_votos]['rate'] = voto['rate']
+                    # votos_out[id_votos]['clvFecha'] = update_fecha(
+                    #    voto['time'], tabla_fecha_out)
                     # print("Generos actualizados")
                     id_votos += 1
                     # print("Liberando pelicula de RAM")
