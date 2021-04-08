@@ -29,12 +29,11 @@ def load_peliculas(cur, con):
         if AnyoEstreno == '\\N':
             AnyoEstreno = -1
 
-        if len(Titulo) < 100:
-            rows.append((int(ClvPelicula), str(Titulo), int(EsAdulta), int(Duracion), int(AnyoEstreno)))
+        rows.append((int(ClvPelicula), str(Titulo), int(EsAdulta), int(Duracion), int(AnyoEstreno)))
     
     #Insert
     cur.bindarraysize = dic_len
-    cur.setinputsizes(int, 100, 1, int, int)
+    cur.setinputsizes(int, 170, 1, int, int)
     cur.executemany("insert into Pelicula (ClvPelicula, Titulo, EsAdulta, Duracion, AnyoEstreno) values (:1, :2, :3, :4, :5)", rows)
     con.commit()
 

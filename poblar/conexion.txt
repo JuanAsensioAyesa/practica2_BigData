@@ -1,6 +1,8 @@
 ssh -Y root@localhost -p 2223
 RootRoot$
+
 sqlplus sys/ORA-PASS1 as sysdba
+
 startup (ORACLE NOT AVALIABLE)
 
 scp -P 2223 archivo root@localhost:/
