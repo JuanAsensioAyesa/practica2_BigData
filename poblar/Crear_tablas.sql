@@ -21,7 +21,7 @@ CREATE TABLE MiembroCrew
 CREATE TABLE MiembroCast
 (
 	ClvMiembroCast			NUMBER,
-	NombrePersonaje			CHAR(64),
+	NombrePersonaje			CHAR(80),
 	Nombre			CHAR(64)		NOT NULL,
 	AnyoNacimiento			NUMBER		NOT NULL,
 	AnyoFallecimiento			NUMBER		NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE MiembroCast
 CREATE TABLE Pelicula
 (
 	ClvPelicula			NUMBER,
-	Titulo			CHAR(170)		NOT NULL,
+	Titulo			CHAR(100)		NOT NULL,
 	EsAdulta			NUMBER(1),
 	Duracion			NUMBER,
 	AnyoEstreno			NUMBER,
