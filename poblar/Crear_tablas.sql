@@ -70,10 +70,9 @@ CREATE TABLE Voto
 	ClvPelicula			NUMBER		NOT NULL,
 	ClvGenero			NUMBER		NOT NULL,
 	ClvFecha			NUMBER		NOT NULL,
+	UserName			NUMBER      NOT NULL,
 	Puntuacion			FLOAT,
 	PRIMARY KEY(ClvVoto),
-	FOREIGN KEY(ClvCrew) REFERENCES Crew (ClvCrew),
-	FOREIGN KEY(ClvCast) REFERENCES Cast (ClvCast),
 	FOREIGN KEY(ClvPelicula) REFERENCES Pelicula (ClvPelicula),
 	FOREIGN KEY(ClvGenero) REFERENCES Genero (ClvGenero),
 	FOREIGN KEY(ClvFecha) REFERENCES Fecha (ClvFecha));

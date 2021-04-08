@@ -196,6 +196,81 @@ def load_crew(cur, con):
     cur.executemany("insert into Crew (ClvCrew, ClvMiembroCrew) values (:1, :2)", rows)
     con.commit()
 
+def load_cast(cur, con):
+    print("Insertando los valores de la tabla Cast...")
+    f = open("./tablas/tabla_cast.pck", 'rb')
+    dic_miembro = pickle.load(f)
+    f.close()
+
+    key_list = list(dic_miembro.keys())
+    dic_len = len(dic_miembro)
+
+    rows = []
+    tam = 0
+    for i in range(dic_len):
+        key_i = key_list[i]
+        tuplas_list = list(dic_miembro[key_i]["tuplas"])
+        for j in range (len(tuplas_list)):
+            #Obtenemos datos
+            ClvCast = tuplas_list[j][0]
+            ClvMiembroCast = tuplas_list[j][1]
+            if ClvMiembroCast != '\\N':
+                rows.append((int(ClvCast), int(ClvMiembroCast)))
+                tam += 1
+    
+    #Insert
+    cur.bindarraysize = tam
+    cur.setinputsizes(int, int)
+    cur.executemany("insert into Cast (ClvCast, ClvMiembroCast) values (:1, :2)", rows)
+    con.commit()
+
+def load_voto(cur, con):
+    for voto_i in range(7):
+        voto_i +=1
+        print("Insertando los valores de la tabla Voto ("+str(voto_i)+")...")
+        f = open("./tablas/tabla_votos"+str(voto_i)+".pck", 'rb')
+        dic_voto = pickle.load(f)
+        f.close()
+
+        key_list = list(dic_voto.keys())
+        dic_len = len(dic_voto)
+
+        rows = []
+        tam = 0
+        for i in range(dic_len):
+            key_i = key_list[i]
+
+            #Obtenemos datos
+            ClvVoto = key_i
+            ClvCrew = dic_voto[key_i]["clvCrew"]
+            ClvCast = dic_voto[key_i]["clvCast"]
+            ClvPelicula = dic_voto[key_i]["clvPelicula"]
+            ClvGenero = dic_voto[key_i]["clvGenero"]
+            ClvFecha = dic_voto[key_i]["clvFecha"]
+            UserName = dic_voto[key_i]["user"]
+            Puntuacion = dic_voto[key_i]["rate"]
+
+            rows.append((int(ClvVoto), int(ClvCrew), int(ClvCast), int(ClvPelicula), int(ClvGenero), int(ClvFecha), int(UserName), float(Puntuacion)))
+            tam +=1
+
+            if tam == 10240:
+                #Insert
+                cur.bindarraysize = tam
+                cur.setinputsizes(int, int, int, int, int, int, int, float)
+                cur.executemany("insert into Voto (ClvVoto, ClvCrew, ClvCast, ClvPelicula, ClvGenero, ClvFecha, UserName, Puntuacion) values (:1, :2, :3, :4, :5, :6, :7, :8)", rows)
+                con.commit()
+                tam = 0
+                rows = []
+
+        if tam != 10240:
+            #Insert
+            cur.bindarraysize = tam
+            cur.setinputsizes(int, int, int, int, int, int, int, float)
+            cur.executemany("insert into Voto (ClvVoto, ClvCrew, ClvCast, ClvPelicula, ClvGenero, ClvFecha, UserName, Puntuacion) values (:1, :2, :3, :4, :5, :6, :7, :8)", rows)
+            con.commit()
+            tam = 0
+            rows = []
+
 ############################################
 ################### MAIN ###################
 
@@ -209,12 +284,14 @@ try:
 
     cur = connection.cursor()
 
-    #load_peliculas(cur, connection)
-    #load_generos(cur, connection)
-    #load_MiembroCrew(cur, connection)
-    #load_MiembroCast(cur, connection)
-    #load_fecha(cur, connection)
+    load_peliculas(cur, connection)
+    load_generos(cur, connection)
+    load_MiembroCrew(cur, connection)
+    load_MiembroCast(cur, connection)
+    load_fecha(cur, connection)
     load_crew(cur, connection)
+    load_cast(cur, connection)
+    load_voto(cur, connection)
 
     cur.close()
     
