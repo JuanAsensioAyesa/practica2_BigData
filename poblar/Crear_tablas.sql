@@ -52,14 +52,14 @@ CREATE TABLE Crew
 (
 	ClvCrew			NUMBER,
 	ClvMiembroCrew			NUMBER,
-	PRIMARY KEY(ClvCrew),
+	PRIMARY KEY(ClvCrew,ClvMiembroCrew),
 	FOREIGN KEY(ClvMiembroCrew) REFERENCES MiembroCrew (ClvMiembroCrew));
 
 CREATE TABLE Cast
 (
 	ClvCast			NUMBER,
 	ClvMiembroCast			NUMBER,
-	PRIMARY KEY(ClvCast),
+	PRIMARY KEY(ClvCast,ClvMiembroCast),
 	FOREIGN KEY(ClvMiembroCast) REFERENCES MiembroCast (ClvMiembroCast));
 
 CREATE TABLE Voto
