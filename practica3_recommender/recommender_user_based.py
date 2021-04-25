@@ -11,8 +11,9 @@ movies_data.drop(columns=['genres'], inplace=True)
 
 #USUARIO para el que se va a recomendar películas:
 user = [
-            {'title':'Star Wars: Episode IV - A New Hope (1977)', 'rating':5},
-            {'title':'Lord of the Rings: The Fellowship of the Ring, The (2001)', 'rating':4.5},
+            {'title':'Star Wars: Episode IV - A New Hope (1977)', 'rating':4.5},
+            {'title':'Lord of the Rings: The Fellowship of the Ring, The (2001)', 'rating':4},
+            {'title':'Indiana Jones and the Temple of Doom (1984)', 'rating':4},
         ] 
 
 inputUser = pd.DataFrame(user)
@@ -32,55 +33,58 @@ usersId = sorted(usersId,  key=lambda x: len(x[1]), reverse=True)
 #Obtenemos 100 usuarios más relevantes
 usersId = usersId[0:100]
 
-#Store the Pearson Correlation in a dictionary, where the key is the user Id and the value is the coefficient
-pearsonCorDict = {}
+#Guardamos las correlaciones entre los usuarios en un diccionario
+#key: User ID
+#Value: Coeficiente de correlacion
+usersCorDict = {}
 
-#For every user group in our subset
-for name, group in usersId:
-    #Let's start by sorting the input and current user group so the values aren't mixed up later on
-    group = group.sort_values(by='movieId')
+#Para cada usuario del subgrupo de 100 usuarios
+for nameId, groupMovies in usersId:
+    #Ordenamos las películas del actual grupo y el input del usuario
+    groupMovies = groupMovies.sort_values(by='movieId')
     inputUser = inputUser.sort_values(by='movieId')
-    #Get the N for the formula
-    n = len(group)
-    #Get the review scores for the movies that they both have in common
-    temp = inputUser[inputUser['movieId'].isin(group['movieId'].tolist())]
-    #And then store them in a temporary buffer variable in a list format to facilitate future calculations
+    #Tamaño del grupo
+    n = len(groupMovies)
+    #Obtenemos la puntuacion de las peliculas que tienen ambos en comun (Grupo e Input)
+    temp = inputUser[inputUser['movieId'].isin(groupMovies['movieId'].tolist())]
     tempRatingList = temp['rating'].tolist()
-    #put the current user group reviews in a list format
-    tempGroupList = group['rating'].tolist()
-    #Now let's calculate the pearson correlation between two users, so called, x and y
+    tempGroupList = groupMovies['rating'].tolist()
+    #Calculamos la correlación entre los dos usuarios (Grupo e input)
     Sxx = sum([i**2 for i in tempRatingList]) - pow(sum(tempRatingList),2)/float(n)
     Syy = sum([i**2 for i in tempGroupList]) - pow(sum(tempGroupList),2)/float(n)
     Sxy = sum( i*j for i, j in zip(tempRatingList, tempGroupList)) - sum(tempRatingList)*sum(tempGroupList)/float(n)
     
-    #If the denominator is different than zero, then divide, else, 0 correlation.
+    #Si el denominador es 0, no hay correlacion
     if Sxx != 0 and Syy != 0:
-        pearsonCorDict[name] = Sxy/sqrt(Sxx*Syy)
+        usersCorDict[nameId] = Sxy/sqrt(Sxx*Syy)
     else:
-        pearsonCorDict[name] = 0
+        usersCorDict[nameId] = 0
     
 
-pearsonDF = pd.DataFrame.from_dict(pearsonCorDict, orient='index')
-pearsonDF.columns = ['similarityIndex']
-pearsonDF['userId'] = pearsonDF.index
-pearsonDF.index = range(len(pearsonDF))
+#Obtenemos los 50 usuarios con más correlación con input user
+usersDF = pd.DataFrame.from_dict(usersCorDict, orient='index')
+usersDF.columns = ['similarityIndex']
+usersDF['userId'] = usersDF.index
+usersDF.index = range(len(usersDF))
+topUsers=usersDF.sort_values(by='similarityIndex', ascending=False)[0:50]
 
-topUsers=pearsonDF.sort_values(by='similarityIndex', ascending=False)[0:50]
-
+#Incluimos las películas que han puntuado el top 50 de usuarios
 topUsersRating=topUsers.merge(ratings_data, left_on='userId', right_on='userId', how='inner')
 
+#Para cada película que han puntuado los 50 usuarios, multiplicamos la puntuación por su correlación con input user
 topUsersRating['weightedRating'] = topUsersRating['similarityIndex']*topUsersRating['rating']
 
-#Applies a sum to the topUsers after grouping it up by userId
+#Sumamos el weightedRating y similarityIndex de cada uno de las películas
 tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
 tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
 
-#Creates an empty dataframe
+
 recommendation_df = pd.DataFrame()
-#Now we take the weighted average
+#Obtenemos la media del peso de cada película
 recommendation_df['weighted average recommendation score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
 recommendation_df['movieId'] = tempTopUsersRating.index
 
 recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
 
+#Mostramos las 10 películas recomendadas para input user
 print(movies_data.loc[movies_data['movieId'].isin(recommendation_df.head(10)['movieId'].tolist())])
