@@ -23,7 +23,7 @@ ratings_mean_count['rating_counts'] = pd.DataFrame(movie_ratings.groupby('title'
 
 #Recomendaciones ITEM - ITEM
 min_rating = 25
-movie_i = 'Star Wars: Episode IV - A New Hope (1977)'
+#movie_i = 'Star Wars: Episode IV - A New Hope (1977)'
 #movie_i = 'Lord of the Rings: The Fellowship of the Ring, The (2001)'
 #movie_i = 'Shutter Island (2010)'
 #movie_i = 'Truman Show, The (1998)'

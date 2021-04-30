@@ -11,9 +11,10 @@ movies_data.drop(columns=['genres'], inplace=True)
 
 #USUARIO para el que se va a recomendar películas:
 user = [
-            {'title':'Star Wars: Episode IV - A New Hope (1977)', 'rating':4.5},
-            {'title':'Lord of the Rings: The Fellowship of the Ring, The (2001)', 'rating':4},
-            {'title':'Indiana Jones and the Temple of Doom (1984)', 'rating':4},
+            {'title':'Inception (2010)', 'rating':4.5},
+            {'title':'Interstellar (2014)', 'rating':5},
+            {'title':'Shutter Island (2010)', 'rating':4.5},
+            {'title':'Wolf of Wall Street, The (2013)', 'rating':4.5},
         ] 
 
 inputUser = pd.DataFrame(user)
