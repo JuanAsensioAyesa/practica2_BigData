@@ -14,3 +14,5 @@ scp -P 2223 archivo root@localhost:/
 /etc/init.d/oracle-xe start  (NO LISTENER)
 
 SET LINESIZE 16000 (Ver mejor los resultados en SQLPLUS)
+
+192.168.56.101:1521/xe
