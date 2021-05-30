@@ -30,15 +30,13 @@ ORDER BY
 -- Media de puntuaciones por genero principal
 SELECT
     g.Genero1,
-    g.Genero2,
     avg(v.Puntuacion) Media_Puntuacion
 FROM
     Voto v
 INNER JOIN 
     Genero g ON g.ClvGenero = v.ClvGenero
 GROUP BY
-    g.Genero1,
-    g.Genero2
+    g.Genero1
 ORDER BY
     Media_Puntuacion DESC;
 
