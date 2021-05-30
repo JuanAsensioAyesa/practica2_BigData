@@ -10,6 +10,8 @@ INNER JOIN
     MiembroCast a ON a.ClvMiembroCast = c.ClvMiembroCast
 GROUP BY 
     a.Nombre
+HAVING 
+    count(v.Puntuacion) > 2;
 ORDER BY 
     Media_Peliculas DESC;
 
