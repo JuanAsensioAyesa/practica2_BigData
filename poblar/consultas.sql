@@ -11,7 +11,7 @@ INNER JOIN
 GROUP BY 
     a.Nombre
 HAVING 
-    count(v.Puntuacion) > 2;
+    count(v.Puntuacion) > 2
 ORDER BY 
     Media_Peliculas DESC;
 
